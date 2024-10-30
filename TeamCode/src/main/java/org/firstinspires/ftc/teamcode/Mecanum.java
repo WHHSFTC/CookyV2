@@ -1,5 +1,3 @@
-//test test 1 2 3 4
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -107,6 +105,27 @@ public class Mecanum extends LinearOpMode {
             telemetry.addData("Back Right Motor ", backRightPower * powerMultiplier * 100);
 
             telemetry.addData("servo pos: ", claw.getPosition());
+
+            // Joystick Diagram
+            int width = 10; // Width of the diagram
+            int height = 10; // Height of the diagram
+            int xPos = (int) ((gamepad1.left_stick_x + 1) / 2 * (width - 1));
+            int yPos = (int) ((y + 1) / 2 * (height - 1)); // Use the already defined 'y'
+
+            StringBuilder diagram = new StringBuilder();
+            for (int yIndex = 0; yIndex < height; yIndex++) {
+                for (int xIndex = 0; xIndex < width; xIndex++) {
+                    if (xIndex == xPos && yIndex == yPos) {
+                        diagram.append("X"); // Joystick position
+                    } else {
+                        diagram.append("."); // Empty space
+                    }
+                }
+                diagram.append("\n"); // New line for the next row
+            }
+
+            // Display the joystick diagram
+            telemetry.addData("Joystick Diagram:", diagram.toString());
 
             telemetry.update(); // Update all the data on the DS telemetry window
         }
