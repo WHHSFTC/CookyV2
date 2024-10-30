@@ -106,7 +106,7 @@ public class Mecanum extends LinearOpMode {
 
             telemetry.addData("\nServo Position: ", claw.getPosition());
 
-            //Print Joystick Values
+            //Print joystick values
             telemetry.addData("\nG1 Left Stick X", x);
             telemetry.addData("G1 Left Stick Y", y);
             telemetry.addData("G1 Right Stick X", rx);
