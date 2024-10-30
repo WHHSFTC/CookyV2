@@ -104,7 +104,7 @@ public class Mecanum extends LinearOpMode {
             telemetry.addData("Back Left Motor ", backLeftPower * powerMultiplier * 100);
             telemetry.addData("Back Right Motor ", backRightPower * powerMultiplier * 100);
 
-            telemetry.addData("servo pos: ", claw.getPosition());
+            telemetry.addData("Servo Position: ", claw.getPosition());
 
             // Joystick Diagram
             int width = 10; // Width of the diagram
