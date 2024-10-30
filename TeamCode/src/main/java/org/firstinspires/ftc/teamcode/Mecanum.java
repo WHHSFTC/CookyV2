@@ -99,33 +99,17 @@ public class Mecanum extends LinearOpMode {
             backRightMotor.setPower(backRightPower * powerMultiplier);
 
             //Some useful telemetry data to have on the DS
-            telemetry.addData("Front Left Motor ", frontLeftPower * powerMultiplier * 100);
+            telemetry.addData("\nFront Left Motor ", frontLeftPower * powerMultiplier * 100);
             telemetry.addData("Front Right Motor ", frontRightPower * powerMultiplier * 100);
             telemetry.addData("Back Left Motor ", backLeftPower * powerMultiplier * 100);
             telemetry.addData("Back Right Motor ", backRightPower * powerMultiplier * 100);
 
-            telemetry.addData("Servo Position: ", claw.getPosition());
+            telemetry.addData("\nServo Position: ", claw.getPosition());
 
-            // Joystick Diagram
-            int width = 10; // Width of the diagram
-            int height = 10; // Height of the diagram
-            int xPos = (int) ((gamepad1.left_stick_x + 1) / 2 * (width - 1));
-            int yPos = (int) ((y + 1) / 2 * (height - 1)); // Use the already defined 'y'
-
-            StringBuilder diagram = new StringBuilder();
-            for (int yIndex = 0; yIndex < height; yIndex++) {
-                for (int xIndex = 0; xIndex < width; xIndex++) {
-                    if (xIndex == xPos && yIndex == yPos) {
-                        diagram.append("X"); // Joystick position
-                    } else {
-                        diagram.append("."); // Empty space
-                    }
-                }
-                diagram.append("\n"); // New line for the next row
-            }
-
-            // Display the joystick diagram
-            telemetry.addData("Joystick Diagram:", diagram.toString());
+            //Print Joystick Values
+            telemetry.addData("\nG1 Left Stick X", x);
+            telemetry.addData("G1 Left Stick Y", y);
+            telemetry.addData("G1 Right Stick X", rx);
 
             telemetry.update(); // Update all the data on the DS telemetry window
         }
