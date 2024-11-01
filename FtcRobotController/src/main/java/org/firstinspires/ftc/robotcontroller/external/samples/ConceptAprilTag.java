@@ -180,6 +180,8 @@ public class ConceptAprilTag extends LinearOpMode {
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();
 
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "Webcam 1", hardwareMap.appContext.getPackageName());
+
         // Disable or re-enable the aprilTag processor at any time.
         //visionPortal.setProcessorEnabled(aprilTag, true);
 
