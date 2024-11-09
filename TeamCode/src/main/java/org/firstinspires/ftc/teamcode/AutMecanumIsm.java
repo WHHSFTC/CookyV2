@@ -1,20 +1,25 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 //import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 //import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 //import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +36,7 @@ public class AutMecanumIsm extends LinearOpMode {
     final double MAX_AUTO_TURN = 0.3;
 
     private DcMotor leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive;
+    private DistanceSensor sensorDistance;
     private static final boolean USE_WEBCAM = true;
     private static int DESIRED_TAG_ID = 12;
     private VisionPortal visionPortal;
@@ -49,7 +55,7 @@ public class AutMecanumIsm extends LinearOpMode {
         telemetry.addData(">", "Touch START to start OpMode");
         telemetry.update();
         waitForStart();
-
+        DESIRED_TAG_ID = 12;
         while (opModeIsActive()) {
             driveToAprilTag();
             sleep(10);
@@ -60,6 +66,10 @@ public class AutMecanumIsm extends LinearOpMode {
      * Drives the robot towards an AprilTag based on detected tag data.
      */
     public void driveToAprilTag() {
+
+        if(DESIRED_TAG_ID>15){
+            DESIRED_TAG_ID = 12;
+        }
         boolean targetFound = false;
         double drive = 0, strafe = 0, turn = 0;
         AprilTagDetection desiredTag = null;
@@ -70,12 +80,16 @@ public class AutMecanumIsm extends LinearOpMode {
                 targetFound = true;
                 desiredTag = detection;
                 break;
-            } else{
-                turn = -Range.clip(-0.5, -MAX_AUTO_TURN, MAX_AUTO_TURN);
             }
         }
 
+        if(!targetFound){
+            telemetry.addData("ID", DESIRED_TAG_ID);
+            turn = -Range.clip(-0.2, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+        }
+
         if (targetFound) {
+
             double rangeError = desiredTag.ftcPose.range - DESIRED_DISTANCE;
             double headingError = desiredTag.ftcPose.bearing;
             double yawError = desiredTag.ftcPose.yaw;
@@ -91,21 +105,33 @@ public class AutMecanumIsm extends LinearOpMode {
                 DESIRED_TAG_ID++;
             }
         }
+        if(sensorDistance.getDistance(DistanceUnit.CM) < 25){
+            drive = 0.5;
+            turn = 0;
+            strafe = 0;
+        }
+
 
         telemetry.update();
         moveRobot(drive, strafe, turn);
     }
+
 
     private void initMotors() {
         leftFrontDrive = hardwareMap.get(DcMotor.class, "frontLeft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
         leftBackDrive = hardwareMap.get(DcMotor.class, "backLeft");
         rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
+        sensorDistance = hardwareMap.get(DistanceSensor.class, "distSense");
 
+
+        telemetry.addData(">>", "Press start to continue");
+        telemetry.update();
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)sensorDistance;
     }
 
     public void moveRobot(double x, double y, double yaw) {
