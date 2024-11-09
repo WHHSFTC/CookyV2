@@ -111,7 +111,6 @@ public class AutMecanumIsm extends LinearOpMode {
             strafe = 0;
         }
 
-
         telemetry.update();
         moveRobot(drive, strafe, turn);
     }

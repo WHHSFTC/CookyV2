@@ -5,12 +5,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
+
 
 @TeleOp
 //@Disabled
 public class Mecanum extends LinearOpMode {
+    //private DistanceSensor sensorDistance;
     @Override
     public void runOpMode() throws InterruptedException {
         //Setting up the motors in the code based on the configuration names of the motors
@@ -37,6 +37,9 @@ public class Mecanum extends LinearOpMode {
         boolean g1RightBumperPressed = false; // Toggles between T and F when bumper is clicked
         boolean g1RightBumperPrevious = false; // Temporary storage for conditionals
 
+        boolean g1LeftBumperPressed = false; // Toggles between T and F when bumper is clicked
+        boolean g1LeftBumperPrevious = false; // Temporary storage for conditionals
+
         boolean g2RightBumperPressed = false; // Toggles between T and F when bumper is clicked
         boolean g2RightBumperPrevious = false; // Temporary storage for conditionals
 
@@ -49,6 +52,7 @@ public class Mecanum extends LinearOpMode {
 
 
             boolean g1RightBumperInput = gamepad1.right_bumper; // Actual state of bumper
+            //boolean g1LeftBumperInput = gamepad1.right_bumper; // Actual state of bumper
             boolean g2RightBumperInput = gamepad2.right_bumper; // Actual state of bumper
 
             if (y == 0 || x == 0) rx *= 0.6; // Puts motor power at 80% when the robot is turning-in-place
@@ -73,7 +77,6 @@ public class Mecanum extends LinearOpMode {
             if (!g1RightBumperPressed) powerMultiplier = 1.0; // Set motor power to 100%
 
             telemetry.addData("Speed: ", powerMultiplier); // Shown on DS for reference
-
 
             // Right bumper on gamepad 2 for open/close claw
             if (g2RightBumperInput && !g2RightBumperPrevious) { // Refer to GamePad 1's conditional above
