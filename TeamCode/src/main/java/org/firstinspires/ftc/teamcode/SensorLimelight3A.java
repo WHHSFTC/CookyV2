@@ -77,7 +77,7 @@ public class SensorLimelight3A extends LinearOpMode {
 
         telemetry.setMsTransmissionInterval(11);
 
-        limelight.pipelineSwitch(1); // 0 is the pipeline to identify yellow, 1 is for red, 2 is for blue
+        limelight.pipelineSwitch(1); // put pipeline numbers in the (). 0 is the pipeline to identify yellow, 1 is for red, 2 is for blue
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
