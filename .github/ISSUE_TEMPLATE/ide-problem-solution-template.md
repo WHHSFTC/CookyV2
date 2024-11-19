@@ -1,13 +1,13 @@
 ---
-name: Problem/solution template
-about: This template is for describing an issue, and possible solutions
+name: IDE Problem/solution template
+about: This template is for describing an IDE issue, and possible solutions
 title: "[category (for example, Computer vision)], [problem]"
 labels: ''
 assignees: ''
 
 ---
 
-{Write a sentence or two describing issue}
+[Description of IDE issue]
 
 Problems:
  - [problem 1]
