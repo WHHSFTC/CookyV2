@@ -85,7 +85,7 @@ public class Mecanum extends LinearOpMode {
 
             g2RightBumperPrevious = g2RightBumperInput; // Update previous
 
-            if (g2RightBumperPressed) claw.setPosition(0.5); // Closed Claw Position
+            if (g2RightBumperPressed) claw.setPosition(0.65); // Closed Claw Position
             if (!g2RightBumperPressed) claw.setPosition(0); // Open Claw Position
 
             // Denominator is the largest motor power (absolute value) or 1
