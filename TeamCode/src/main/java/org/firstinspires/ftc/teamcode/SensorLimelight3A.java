@@ -4,146 +4,98 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.LLStatus;
 @TeleOp
 public class SensorLimelight3A extends LinearOpMode {
-
     private Limelight3A limelight;
-    private NetworkTable limelightTable;
-    private double tx, ty, ta, tv;
-    private double targetAlignThreshold = 1.0;
-    private double moveSpeed = 0.5;
-
+    private double tx, ty, ta, tv; // Vision variables
+    private double targetAlignThreshold = 10.0;
+    private double moveSpeed = 0.2;
     private DcMotor leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive;
-
     @Override
     public void runOpMode() throws InterruptedException {
-
-        // Wait for the game to start and establish the connection
-        telemetry.addData(">", "Robot Ready. Waiting for Limelight...");
-        telemetry.update();
-
-        // Initialize NetworkTable and Limelight
-        limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+        // Initialize Limelight and motors
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-
-        // Initialize motors
         leftFrontDrive = hardwareMap.get(DcMotor.class, "frontLeft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
         leftBackDrive = hardwareMap.get(DcMotor.class, "backLeft");
         rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
-
-        // Set motor directions
-        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-
-        // Wait for the start button to be pressed
+        leftFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
         waitForStart();
-
-        // Limelight initialization status check
-        if (opModeIsActive()) {
-            try {
-                limelight.start();  // Start the Limelight camera
-                telemetry.addData("Limelight", "Started Successfully");
-            } catch (Exception e) {
-                telemetry.addData("Error", "Failed to start Limelight: " + e.getMessage());
-                telemetry.update();
-                return;
-            }
-        }
-
-        // Main loop
+        limelight.start();
         while (opModeIsActive()) {
-            // Ensure Limelight networkTable is active
-            try {
-                // Fetch latest data from Limelight
-                tx = limelightTable.getEntry("tx").getDouble(0.0);
-                ty = limelightTable.getEntry("ty").getDouble(0.0);
-                ta = limelightTable.getEntry("ta").getDouble(0.0);
-                tv = limelightTable.getEntry("tv").getDouble(0.0);
-            } catch (Exception e) {
-                telemetry.addData("Error", "NetworkTable error: " + e.getMessage());
-                telemetry.update();
-                continue;
+            // Get the latest data from Limelight
+            LLResult result = limelight.getLatestResult();
+            if (result != null) {
+                tv = result.getTyNC();
+                if(tv!=0)tv=1;
+                else tv=0;
+                tx = result.getTx(); // Horizontal offset
+                ty = result.getTy(); // Vertical offset
+                ta = result.getTa(); // Target area
+            } else {
+                tv = 0.0;
+                tx = 0.0;
+                ty = 0.0;
+                ta = 0.0;
             }
-
+            // Display telemetry
             telemetry.addData("TX", tx);
             telemetry.addData("TY", ty);
             telemetry.addData("TA", ta);
             telemetry.addData("TV", tv);
-
+            telemetry.update();
+            // Right trigger logic
             if (gamepad1.right_trigger > 0.5) {
-                // Align with target if visible
                 if (tv == 1.0) {
-                    alignWithTarget();
+                    alignWithTarget(); // Align with target
                 } else {
-                    stopRobot();
-                    telemetry.addData("Error", "No target found");
+                    stopRobot(); // No target found
                 }
             } else {
-                manualDrive(); // Use manual drive controls
+                manualDrive(); // Manual drive mode
             }
-
-            telemetry.update(); // Update telemetry to the driver hub
         }
-
-        // Stop Limelight after opmode ends
         limelight.stop();
     }
-
     private void alignWithTarget() {
         if (tx > targetAlignThreshold) {
-            // Target is to the right, turn right
-            robotDrive(-moveSpeed, moveSpeed);
+            robotDrive(moveSpeed, -moveSpeed); // Turn right
         } else if (tx < -targetAlignThreshold) {
-            // Target is to the left, turn left
-            robotDrive(moveSpeed, -moveSpeed);
+            robotDrive(-moveSpeed, moveSpeed); // Turn left
         } else {
-            // Target is centered, move forward
-            robotDrive(moveSpeed, moveSpeed);
+            robotDrive(moveSpeed, moveSpeed); // Move forward when centered
         }
     }
-
     private void manualDrive() {
-        // Manual control of the robot using the left joystick
-        double drive = -gamepad1.left_stick_y;  // Forward/reverse control
-        double strafe = gamepad1.left_stick_x; // Turn control
-        robotDrive(drive, strafe);
+        double drive = -gamepad1.left_stick_y;  // Forward/reverse
+        double strafe = gamepad1.left_stick_x; // Strafing
+        double yaw = gamepad1.right_stick_x;   // Turning
+        double leftFrontPower = drive + strafe + yaw;
+        double rightFrontPower = drive - strafe - yaw;
+        double leftBackPower = drive - strafe + yaw;
+        double rightBackPower = drive + strafe - yaw;
+        double max = Math.max(1.0, Math.max(
+                Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),
+                Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower))
+        ));
+        leftFrontDrive.setPower(leftFrontPower / max);
+        rightFrontDrive.setPower(rightFrontPower / max);
+        leftBackDrive.setPower(leftBackPower / max);
+        rightBackDrive.setPower(rightBackPower / max);
     }
-
     private void robotDrive(double leftPower, double rightPower) {
-        // Drive motors with power values (normalized to be between -1 and 1)
-        double yaw = gamepad1.right_stick_x;
-
-        double leftFrontPower = leftPower - rightPower - yaw;
-        double rightFrontPower = leftPower + rightPower + yaw;
-        double leftBackPower = leftPower + rightPower - yaw;
-        double rightBackPower = leftPower - rightPower + yaw;
-
-        // Normalize motor power values to prevent over-driving
-        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-        max = Math.max(max, Math.abs(leftBackPower));
-        max = Math.max(max, Math.abs(rightBackPower));
-
-        if (max > 1.0) {
-            leftFrontPower /= max;
-            rightFrontPower /= max;
-            leftBackPower /= max;
-            rightBackPower /= max;
-        }
-
-        leftFrontDrive.setPower(leftFrontPower);
-        rightFrontDrive.setPower(rightFrontPower);
-        leftBackDrive.setPower(leftBackPower);
-        rightBackDrive.setPower(rightBackPower);
+        leftFrontDrive.setPower(leftPower);
+        rightFrontDrive.setPower(rightPower);
+        leftBackDrive.setPower(leftPower);
+        rightBackDrive.setPower(rightPower);
     }
-
     private void stopRobot() {
-        // Stop all motors
-        robotDrive(0, 0);
+        robotDrive(0, 0); // Stop all motion
     }
 }
