@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 //import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -18,13 +19,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name="Autonomous April Cycle")
+@Autonomous(name = "AprilTag Circle w/ DistanceSensor")
 //@Disabled
 public class AutMecanumIsm extends LinearOpMode {
     double DESIRED_DISTANCE = 20.0;
@@ -67,7 +69,7 @@ public class AutMecanumIsm extends LinearOpMode {
      */
     public void driveToAprilTag() {
 
-        if(DESIRED_TAG_ID>15){
+        if (DESIRED_TAG_ID > 15) {
             DESIRED_TAG_ID = 12;
         }
         boolean targetFound = false;
@@ -83,7 +85,7 @@ public class AutMecanumIsm extends LinearOpMode {
             }
         }
 
-        if(!targetFound){
+        if (!targetFound) {
             telemetry.addData("ID", DESIRED_TAG_ID);
             turn = -Range.clip(-0.2, -MAX_AUTO_TURN, MAX_AUTO_TURN);
         }
@@ -101,11 +103,11 @@ public class AutMecanumIsm extends LinearOpMode {
             telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f", drive, strafe, turn);
             telemetry.addData("Distance", rangeError);
             telemetry.addData("ID", DESIRED_TAG_ID);
-            if(rangeError >= 5 && rangeError <= 10){
+            if (rangeError >= 5 && rangeError <= 10) {
                 DESIRED_TAG_ID++;
             }
         }
-        if(sensorDistance.getDistance(DistanceUnit.CM) < 25){
+        if (sensorDistance.getDistance(DistanceUnit.CM) < 25) {
             drive = 0.5;
             turn = 0;
             strafe = 0;
@@ -130,7 +132,7 @@ public class AutMecanumIsm extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
-        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)sensorDistance;
+        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor) sensorDistance;
     }
 
     public void moveRobot(double x, double y, double yaw) {
@@ -192,7 +194,7 @@ public class AutMecanumIsm extends LinearOpMode {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
                 sleep(50);
             }
-            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+            exposureControl.setExposure((long) exposureMS, TimeUnit.MILLISECONDS);
             sleep(20);
             GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
             gainControl.setGain(gain);

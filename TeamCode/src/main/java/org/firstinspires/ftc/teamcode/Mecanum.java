@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
-@TeleOp
+@TeleOp(name = "Mecanum")
 //@Disabled
 public class Mecanum extends LinearOpMode {
     //private DistanceSensor sensorDistance;
@@ -55,7 +55,8 @@ public class Mecanum extends LinearOpMode {
             //boolean g1LeftBumperInput = gamepad1.right_bumper; // Actual state of bumper
             boolean g2RightBumperInput = gamepad2.right_bumper; // Actual state of bumper
 
-            if (y == 0 || x == 0) rx *= 0.6; // Puts motor power at 80% when the robot is turning-in-place
+            if (y == 0 || x == 0)
+                rx *= 0.6; // Puts motor power at 80% when the robot is turning-in-place
 
             //Speed setting is toggled between slow and fast with one click of the right bumper
             if (g1RightBumperInput && !g1RightBumperPrevious) { //If the right bumper is TRUE (pressed) AND it was previously FALSE (Not Pressed)
