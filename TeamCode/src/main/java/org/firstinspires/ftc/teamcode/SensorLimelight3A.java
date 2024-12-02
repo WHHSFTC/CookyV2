@@ -54,7 +54,7 @@ public class SensorLimelight3A extends LinearOpMode {
                 ta = 0.0;
             }
             // Display telemetry
-            telemetry.addData("TX", tx);
+            telemetry.addData("TX", tx); // Lines 47-49
             telemetry.addData("TY", ty);
             telemetry.addData("TA", ta);
             telemetry.addData("TV", tv);
