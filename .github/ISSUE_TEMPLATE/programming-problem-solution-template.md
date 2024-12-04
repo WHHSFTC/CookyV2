@@ -1,14 +1,14 @@
 ---
 name: Programming Problem/solution template
 about: This template is for describing an issue in the code, or any errors, and possible
-  solutions
-title: 'Code Problem: [problem]'
+  solutions. (Computer Vision is also here)
+title: 'Code/Vision Problem: [problem]'
 labels: ''
 assignees: ''
 
 ---
 
-[Description of Programming Issue, try to include code snippets]
+[Description of Programming or vision Issue, try to include code snippets]
 
 Problems:
  - [problem 1]
