@@ -1,7 +1,8 @@
 ---
 name: Robot Problem/solution template
 about: This template is for describing problems the robot is having (unusual movement,
-  no response, code not pushing)
+  no response, code not pushing). Additionally, physical camera issues are include
+  here.
 title: 'Robot Problem: [problem]'
 labels: ''
 assignees: ''
