@@ -1,7 +1,7 @@
 ---
 name: IDE/Repo Problem/solution template
 about: This template is for describing an IDE issue, and possible solutions
-title: "[category (for example, Computer vision)], [problem]"
+title: 'IDE/Repo Problem: [problem]'
 labels: ''
 assignees: ''
 
