@@ -8,9 +8,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
+
 
 @TeleOp(name = "Limelight Sample Approach w/ manual drive")
 // @Disabled
+
 public class SensorLimelight3A extends LinearOpMode {
     private Limelight3A limelight;
     private double tx, ty, ta, tv; // Vision variables
@@ -21,7 +26,12 @@ public class SensorLimelight3A extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize Limelight and motors
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        //limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        NetworkTableInstance inst = NetworkTableInstance.getDefault();
+        NetworkTable table = inst.getTable("datatable");
+
+        //limelight.pipelineSwitch(5);
 
         leftFrontDrive = hardwareMap.get(DcMotor.class, "frontLeft");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
@@ -40,6 +50,7 @@ public class SensorLimelight3A extends LinearOpMode {
         while (opModeIsActive()) {
             // Get the latest data from Limelight
             LLResult result = limelight.getLatestResult();
+
             if (result != null) {
                 tv = result.getTyNC();
                 if (tv != 0) tv = 1;
@@ -81,7 +92,7 @@ public class SensorLimelight3A extends LinearOpMode {
         } else if (tx < -targetAlignThreshold) {
             robotDrive(-moveSpeed, moveSpeed); // Turn left
         } else {
-            robotDrive(moveSpeed, moveSpeed); // Move forward when centered
+            robotDrive(-moveSpeed, -moveSpeed);
         }
     }
 

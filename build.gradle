@@ -21,6 +21,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven { url 'https://frcmaven.wpi.edu/artifactory/release/' }
+        maven { url 'https://frcmaven.wpi.edu/artifactory/release' }
         google()
     }
 }

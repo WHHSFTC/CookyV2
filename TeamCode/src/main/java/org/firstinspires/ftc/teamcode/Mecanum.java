@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
@@ -11,15 +14,25 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 //@Disabled
 public class Mecanum extends LinearOpMode {
     //private DistanceSensor sensorDistance;
+    private Limelight3A limelight;
+    private double tx, ty, ta, tv; // Vision variables
+    private double targetAlignThreshold = 10.0;
+    private double moveSpeed = 0.384;//cancels out turtle mode and slow turning to ultimately be .2
+    private DcMotor backRightMotor, backLeftMotor, frontRightMotor, frontLeftMotor;
+
     @Override
     public void runOpMode() throws InterruptedException {
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        limelight.pipelineSwitch(5);
         //Setting up the motors in the code based on the configuration names of the motors
-        DcMotor backRightMotor = hardwareMap.dcMotor.get("backRight");// Port 0
-        DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeft"); // Port 1
-        DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRight"); // Port 2
-        DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeft"); // Port 3
+        backRightMotor = hardwareMap.dcMotor.get("backRight");// Port 0
+        backLeftMotor = hardwareMap.dcMotor.get("backLeft"); // Port 1
+        frontRightMotor = hardwareMap.dcMotor.get("frontRight"); // Port 2
+        frontLeftMotor = hardwareMap.dcMotor.get("frontLeft"); // Port 3
 
         Servo claw = hardwareMap.servo.get("clawServo"); // Port 0
+        Servo wrist = hardwareMap.servo.get("wristServo"); // Port 1
 
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
@@ -30,6 +43,8 @@ public class Mecanum extends LinearOpMode {
         waitForStart(); // Don't run code until start button is pressed on DS
 
         if (isStopRequested()) return; // To Stop the opMode when stop button is pressed on DS
+
+        limelight.start();
 
         double powerMultiplier = 1.0; // Used later for the speed setting
 
@@ -44,15 +59,62 @@ public class Mecanum extends LinearOpMode {
         boolean g2RightBumperPrevious = false; // Temporary storage for conditionals
 
         int rumbleNum = 1;
+        double wristPos=.5;
 
         while (opModeIsActive()) {
+            LLResult result = limelight.getLatestResult();
+
+            if (result != null) {
+                tv = result.getTyNC();
+                if (tv != 0) tv = 1;
+                else tv = 0;
+                tx = result.getTx(); // Horizontal offset
+                ty = result.getTy(); // Vertical offset
+                ta = result.getTa(); // Target area
+                telemetry.addData("SampleFound?:", tv);
+            } else { //default to 0 to prevent unwanted movement
+                telemetry.addData("SampleFound?:", tv);
+                tv = 0.0;
+                tx = 0.0;
+                ty = 0.0;
+                ta = 0.0;
+            }
+
+            if(tv == 1.0) {
+                gamepad1.rumbleBlips(1);
+            }
+
+            if (gamepad2.dpad_down) robotDrive(-.2,-.2);
+            if (gamepad2.dpad_up) robotDrive(.2,.2);
+            if (gamepad2.dpad_right) {
+                frontLeftMotor.setPower(.5);
+                backLeftMotor.setPower(-.5);
+                frontRightMotor.setPower(-.5);
+                backRightMotor.setPower(.5);
+            }
+            if (gamepad2.dpad_left) {
+                frontLeftMotor.setPower(-.5);
+                backLeftMotor.setPower(.5);
+                frontRightMotor.setPower(.5);
+                backRightMotor.setPower(-.5);
+            }
+
+            if (gamepad1.right_trigger > 0.5) {
+                if (tv == 1.0 && gamepad1.left_stick_x == 0
+                            && gamepad1.left_stick_y == 0
+                                && gamepad1.right_stick_x == 0
+                                    && gamepad1.right_stick_y == 0) {
+                    alignWithTarget(); // Align with target
+                } else {
+                    stopRobot(); // No target found
+                }
+            }
             double y = -gamepad1.left_stick_y; // REV Gamepad left joystick, so Y is up-down motion
             double x = gamepad1.left_stick_x * 1.6; // REV Gamepad left joystick, so X is left-right motion
             double rx = gamepad1.right_stick_x;  // REV Gamepad right joystick, so x is right-left motion
 
 
             boolean g1RightBumperInput = gamepad1.right_bumper; // Actual state of bumper
-            //boolean g1LeftBumperInput = gamepad1.right_bumper; // Actual state of bumper
             boolean g2RightBumperInput = gamepad2.right_bumper; // Actual state of bumper
 
             if (y == 0 || x == 0)
@@ -86,8 +148,13 @@ public class Mecanum extends LinearOpMode {
 
             g2RightBumperPrevious = g2RightBumperInput; // Update previous
 
-            if (g2RightBumperPressed) claw.setPosition(0.65); // Closed Claw Position
-            if (!g2RightBumperPressed) claw.setPosition(0); // Open Claw Position
+            if (g2RightBumperPressed) claw.setPosition(0.4); // Open Claw Position
+            if (!g2RightBumperPressed) claw.setPosition(0.17); // Closed Claw Position
+
+            if (gamepad2.x) wristPos = .25;
+            if (gamepad2.y) wristPos = .5;
+            if (gamepad2.b) wristPos = .75;
+            wrist.setPosition(wristPos);
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
@@ -119,5 +186,26 @@ public class Mecanum extends LinearOpMode {
 
             telemetry.update(); // Update all the data on the DS telemetry window
         }
+        limelight.stop();
+    }
+
+    private void alignWithTarget() {
+        if (tx > targetAlignThreshold) {
+            robotDrive(moveSpeed, -moveSpeed); // Turn right
+        } else if (tx < -targetAlignThreshold) {
+            robotDrive(-moveSpeed, moveSpeed); // Turn left
+        } else {
+            robotDrive(-moveSpeed, -moveSpeed);
+        }
+    }
+    private void robotDrive(double leftPower, double rightPower) {
+        frontLeftMotor.setPower(leftPower);
+        frontRightMotor.setPower(rightPower);
+        backLeftMotor.setPower(leftPower);
+        backRightMotor.setPower(rightPower);
+    }
+
+    private void stopRobot() {
+        robotDrive(0, 0); // Stop all motion
     }
 }
