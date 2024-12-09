@@ -9,6 +9,7 @@ assignees: ''
 
 ---
 
+Description:
 [Description of Robot problem, try to be descriptive]
 
 Problems:

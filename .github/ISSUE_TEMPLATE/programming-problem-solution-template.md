@@ -8,6 +8,7 @@ assignees: ''
 
 ---
 
+Description:
 [Description of Programming or vision Issue, try to include code snippets]
 
 Problems:

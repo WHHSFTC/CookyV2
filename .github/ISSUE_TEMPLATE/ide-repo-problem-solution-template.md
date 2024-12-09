@@ -7,6 +7,7 @@ assignees: ''
 
 ---
 
+Description: 
 [Description of IDE issue]
 
 Problems:
