@@ -71,7 +71,7 @@ public class Mecanum extends LinearOpMode {
                 tx = result.getTx(); // Horizontal offset
                 ty = result.getTy(); // Vertical offset
                 ta = result.getTa(); // Target area
-                telemetry.addData("SampleFound?:", tv);
+                telemetry.addData("SampleFound?:", tv); // tv is 0 if not sample seen, 1 if one or more samples are seen
             } else { //default to 0 to prevent unwanted movement
                 telemetry.addData("SampleFound?:", tv);
                 tv = 0.0;
@@ -80,19 +80,20 @@ public class Mecanum extends LinearOpMode {
                 ta = 0.0;
             }
 
-            if(tv == 1.0) {
+            if(tv == 1.0) { // gamepad1 vibrates continuously when a sample is detected
                 gamepad1.rumbleBlips(1);
             }
 
+            // Code to let driver2 make small and slow movements of the drivetrain
             if (gamepad2.dpad_down) robotDrive(-.2,-.2);
             if (gamepad2.dpad_up) robotDrive(.2,.2);
-            if (gamepad2.dpad_right) {
+            if (gamepad2.dpad_right) { // Strafe right
                 frontLeftMotor.setPower(.5);
                 backLeftMotor.setPower(-.5);
                 frontRightMotor.setPower(-.5);
                 backRightMotor.setPower(.5);
             }
-            if (gamepad2.dpad_left) {
+            if (gamepad2.dpad_left) { //Strafe Left
                 frontLeftMotor.setPower(-.5);
                 backLeftMotor.setPower(.5);
                 frontRightMotor.setPower(.5);
@@ -100,14 +101,18 @@ public class Mecanum extends LinearOpMode {
             }
 
             if (gamepad1.right_trigger > 0.5) {
-                if (tv == 1.0 && gamepad1.left_stick_x == 0
-                            && gamepad1.left_stick_y == 0
-                                && gamepad1.right_stick_x == 0
-                                    && gamepad1.right_stick_y == 0) {
+                /*if (tv == 1.0 
+                    && gamepad1.left_stick_x == 0
+                    && gamepad1.left_stick_y == 0
+                    && gamepad1.right_stick_x == 0
+                    && gamepad1.right_stick_y == 0) {
                     alignWithTarget(); // Align with target
                 } else {
                     stopRobot(); // No target found
-                }
+                }*/
+                if (tv == 1.0) { // if at least 1 sample is seen
+                    alignWithTarget(); // Align with target
+                } 
             }
             double y = -gamepad1.left_stick_y; // REV Gamepad left joystick, so Y is up-down motion
             double x = gamepad1.left_stick_x * 1.6; // REV Gamepad left joystick, so X is left-right motion
@@ -148,13 +153,15 @@ public class Mecanum extends LinearOpMode {
 
             g2RightBumperPrevious = g2RightBumperInput; // Update previous
 
+            //Code for claw
             if (g2RightBumperPressed) claw.setPosition(0.4); // Open Claw Position
             if (!g2RightBumperPressed) claw.setPosition(0.17); // Closed Claw Position
 
-            if (gamepad2.x) wristPos = .25;
-            if (gamepad2.y) wristPos = .5;
-            if (gamepad2.b) wristPos = .75;
-            wrist.setPosition(wristPos);
+            //Code for wrist
+            if (gamepad2.x) wristPos = .25;// Right Position
+            if (gamepad2.y) wristPos = .5;// Center Position
+            if (gamepad2.b) wristPos = .75;// Left Position
+            wrist.setPosition(wristPos); //move the wrist to the most recent request
 
             // Denominator is the largest motor power (absolute value) or 1
             // This ensures all the powers maintain the same ratio,
