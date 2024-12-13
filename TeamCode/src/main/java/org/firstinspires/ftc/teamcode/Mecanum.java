@@ -22,8 +22,9 @@ public class Mecanum extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        //Setting up limelight and giving it a name
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-
+        //Setting limelight to pipeline 5 which we set up in the limelight software. Pipeline 5 is the neural detector
         limelight.pipelineSwitch(5);
         //Setting up the motors in the code based on the configuration names of the motors
         backRightMotor = hardwareMap.dcMotor.get("backRight");// Port 0
@@ -44,36 +45,30 @@ public class Mecanum extends LinearOpMode {
 
         if (isStopRequested()) return; // To Stop the opMode when stop button is pressed on DS
 
-        limelight.start();
+        limelight.start(); //Activate Limelight
 
+        double wristPos=.5; //Used later for setting the position of the wrist
         double powerMultiplier = 1.0; // Used later for the speed setting
+        int rumbleNum = 1; // Used later for the speed setting rumble
 
         // Set the bumpers that are used later all to false
         boolean g1RightBumperPressed = false; // Toggles between T and F when bumper is clicked
         boolean g1RightBumperPrevious = false; // Temporary storage for conditionals
 
-        boolean g1LeftBumperPressed = false; // Toggles between T and F when bumper is clicked
-        boolean g1LeftBumperPrevious = false; // Temporary storage for conditionals
-
         boolean g2RightBumperPressed = false; // Toggles between T and F when bumper is clicked
         boolean g2RightBumperPrevious = false; // Temporary storage for conditionals
 
-        int rumbleNum = 1;
-        double wristPos=.5;
-
         while (opModeIsActive()) {
-            LLResult result = limelight.getLatestResult();
+            LLResult result = limelight.getLatestResult(); //Get the latest data from limelight
 
-            if (result != null) {
+            if (result != null) { // If the limelight isn't null (aka it sees a sample)
                 tv = result.getTyNC();
-                if (tv != 0) tv = 1;
+                if (tv != 0) tv = 1; //tv is 0 if no samples are seen, 1 if samples are seen
                 else tv = 0;
                 tx = result.getTx(); // Horizontal offset
                 ty = result.getTy(); // Vertical offset
                 ta = result.getTa(); // Target area
-                telemetry.addData("SampleFound?:", tv); // tv is 0 if not sample seen, 1 if one or more samples are seen
             } else { //default to 0 to prevent unwanted movement
-                telemetry.addData("SampleFound?:", tv);
                 tv = 0.0;
                 tx = 0.0;
                 ty = 0.0;
@@ -85,31 +80,15 @@ public class Mecanum extends LinearOpMode {
             }
 
             // Code to let driver2 make small and slow movements of the drivetrain
-            if (gamepad2.dpad_down) robotDrive(-.2,-.2);
-            if (gamepad2.dpad_up) robotDrive(.2,.2);
+            if (gamepad2.dpad_down) moveRobot(.5,0,0);
+            if (gamepad2.dpad_up) moveRobot(-.5,0,0);
             if (gamepad2.dpad_right) { // Strafe right
-                frontLeftMotor.setPower(.5);
-                backLeftMotor.setPower(-.5);
-                frontRightMotor.setPower(-.5);
-                backRightMotor.setPower(.5);
+                moveRobot(0,-.5,0);
             }
             if (gamepad2.dpad_left) { //Strafe Left
-                frontLeftMotor.setPower(-.5);
-                backLeftMotor.setPower(.5);
-                frontRightMotor.setPower(.5);
-                backRightMotor.setPower(-.5);
+                moveRobot(0,.5,0);
             }
-
             if (gamepad1.right_trigger > 0.5) {
-                /*if (tv == 1.0 
-                    && gamepad1.left_stick_x == 0
-                    && gamepad1.left_stick_y == 0
-                    && gamepad1.right_stick_x == 0
-                    && gamepad1.right_stick_y == 0) {
-                    alignWithTarget(); // Align with target
-                } else {
-                    stopRobot(); // No target found
-                }*/
                 if (tv == 1.0) { // if at least 1 sample is seen
                     alignWithTarget(); // Align with target
                 } 
@@ -144,8 +123,6 @@ public class Mecanum extends LinearOpMode {
             if (g1RightBumperPressed) powerMultiplier = 0.6; // Set motor power to 60%
             if (!g1RightBumperPressed) powerMultiplier = 1.0; // Set motor power to 100%
 
-            telemetry.addData("Speed: ", powerMultiplier); // Shown on DS for reference
-
             // Right bumper on gamepad 2 for open/close claw
             if (g2RightBumperInput && !g2RightBumperPrevious) { // Refer to GamePad 1's conditional above
                 g2RightBumperPressed = !g2RightBumperPressed;
@@ -179,6 +156,10 @@ public class Mecanum extends LinearOpMode {
             backRightMotor.setPower(backRightPower * powerMultiplier);
 
             //Some useful telemetry data to have on the DS
+
+            telemetry.addData("SampleFound?:", tv); // tv is 0 if not sample seen, 1 if one or more samples are seen
+
+            telemetry.addData("Speed: ", powerMultiplier); // Shown on DS for reference
             telemetry.addData("\nFront Left Motor ", frontLeftPower * powerMultiplier * 100);
             telemetry.addData("Front Right Motor ", frontRightPower * powerMultiplier * 100);
             telemetry.addData("Back Left Motor ", backLeftPower * powerMultiplier * 100);
@@ -196,6 +177,7 @@ public class Mecanum extends LinearOpMode {
         limelight.stop();
     }
     private void moveRobot(double x, double y, double yaw) { // to optimize and shorten robot movement in the code
+        x = -x;
         double leftFrontPower = x - y - yaw;
         double rightFrontPower = x + y + yaw;
         double leftBackPower = x + y - yaw;
@@ -212,10 +194,10 @@ public class Mecanum extends LinearOpMode {
             rightBackPower /= max;
         }
 
-        leftFrontDrive.setPower(leftFrontPower);
-        rightFrontDrive.setPower(rightFrontPower);
-        leftBackDrive.setPower(leftBackPower);
-        rightBackDrive.setPower(rightBackPower);
+        frontLeftMotor.setPower(leftFrontPower);
+        frontRightMotor.setPower(rightFrontPower);
+        backLeftMotor.setPower(leftBackPower);
+        backRightMotor.setPower(rightBackPower);
     }
 
     private void alignWithTarget() {
