@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import java.util.*;
+
 
 @TeleOp(name = "Mecanum")
 //@Disabled
@@ -19,6 +21,13 @@ public class Mecanum extends LinearOpMode {
     private double targetAlignThreshold = 10.0;
     private double moveSpeed = 0.384;//cancels out turtle mode and slow turning to ultimately be .2
     private DcMotor backRightMotor, backLeftMotor, frontRightMotor, frontLeftMotor;
+
+    // Declare two maps to track the toggle states and previous states of buttons.
+    // The keys are button names (String), and the values are their states (Boolean).
+    private final Map<String, Boolean> toggleStates = new HashMap<>();
+    private final Map<String, Boolean> previousStates = new HashMap<>();
+    int rumbleNum = 1; // Used later for the speed setting rumble
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -49,14 +58,8 @@ public class Mecanum extends LinearOpMode {
 
         double wristPos=.5; //Used later for setting the position of the wrist
         double powerMultiplier = 1.0; // Used later for the speed setting
-        int rumbleNum = 1; // Used later for the speed setting rumble
 
-        // Set the bumpers that are used later all to false
-        boolean g1RightBumperPressed = false; // Toggles between T and F when bumper is clicked
-        boolean g1RightBumperPrevious = false; // Temporary storage for conditionals
 
-        boolean g2RightBumperPressed = false; // Toggles between T and F when bumper is clicked
-        boolean g2RightBumperPrevious = false; // Temporary storage for conditionals
 
         while (opModeIsActive()) {
             LLResult result = limelight.getLatestResult(); //Get the latest data from limelight
@@ -98,41 +101,18 @@ public class Mecanum extends LinearOpMode {
             double rx = gamepad1.right_stick_x;  // REV Gamepad right joystick, so x is right-left motion
 
 
-            boolean g1RightBumperInput = gamepad1.right_bumper; // Actual state of bumper
-            boolean g2RightBumperInput = gamepad2.right_bumper; // Actual state of bumper
 
             if (y == 0 || x == 0)
                 rx *= 0.6; // Puts motor power at 80% when the robot is turning-in-place
 
-            //Speed setting is toggled between slow and fast with one click of the right bumper
-            if (g1RightBumperInput && !g1RightBumperPrevious) { //If the right bumper is TRUE (pressed) AND it was previously FALSE (Not Pressed)
-                g1RightBumperPressed = !g1RightBumperPressed; // Toggle the boolean for the bumper to the opposite, T to F or F to T
-                /* .rumbleBlips() rumbles the number of times you
-                put into the (), since rumble num is ++ every press
-                of the bumper, we check if it is even or odd to
-                trigger the according number of blips. %2 always
-                returns either 0 or 1, so if you add 1, you can
-                switch between 1 blip or 2 blips
-                */
-                gamepad1.rumbleBlips(rumbleNum % 2 + 1);
-                rumbleNum++;
-            }
 
-            g1RightBumperPrevious = g1RightBumperInput; // Set the new previous state of the bumper
+            if(toggleButton(gamepad1.right_bumper, "g1RightBumper")) powerMultiplier=0.6;
+            else powerMultiplier=1.0;
 
-            if (g1RightBumperPressed) powerMultiplier = 0.6; // Set motor power to 60%
-            if (!g1RightBumperPressed) powerMultiplier = 1.0; // Set motor power to 100%
-
-            // Right bumper on gamepad 2 for open/close claw
-            if (g2RightBumperInput && !g2RightBumperPrevious) { // Refer to GamePad 1's conditional above
-                g2RightBumperPressed = !g2RightBumperPressed;
-            }
-
-            g2RightBumperPrevious = g2RightBumperInput; // Update previous
 
             //Code for claw
-            if (g2RightBumperPressed) claw.setPosition(0.4); // Open Claw Position
-            if (!g2RightBumperPressed) claw.setPosition(0.17); // Closed Claw Position
+            if (toggleButton(gamepad2.right_bumper, "g2RightBumper")) claw.setPosition(0.4); // Open Claw Position
+            else claw.setPosition(0.17); // Closed Claw Position
 
             //Code for wrist
             if (gamepad2.x) wristPos = .25;// Right Position
@@ -218,5 +198,28 @@ public class Mecanum extends LinearOpMode {
 
     private void stopRobot() {
         robotDrive(0, 0); // Stop all motion
+    }
+    private boolean toggleButton(boolean buttonInput, String buttonName) {
+        // Get the previous state for this button, default to false if not set
+        boolean previousState = previousStates.getOrDefault(buttonName, false);// Fetch the previous state; default is false
+        boolean toggleState = toggleStates.getOrDefault(buttonName, false);// Fetch the current toggle state; default is false
+
+        // Check for toggle
+        if (buttonInput && !previousState) {
+            toggleState = !toggleState; // Toggle the state
+            toggleStates.put(buttonName, toggleState); // Update toggle state in map
+
+            // Vibrate if specific button is pressed
+            if(buttonName.equals("g1RightBumper")) {
+                gamepad1.rumbleBlips(rumbleNum % 2 + 1);
+                rumbleNum++;
+            }
+        }
+
+        // Update the previous state in the map
+        previousStates.put(buttonName, buttonInput);
+
+        // Return the current toggle state for this button
+        return toggleState;
     }
 }
