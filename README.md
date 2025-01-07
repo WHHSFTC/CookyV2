@@ -1,3 +1,5 @@
+By Aditya Singh, Bahand Abdulrahman, and Edwin Tenney
+
 ## NOTICE
 
 This repository contains the public FTC SDK for the CENTERSTAGE (2023-2024) competition season.
@@ -1551,5 +1553,6 @@ Changes include:
  * The API for the Legacy Module and Core Device Interface Module have been updated.
    - Support for encoders with the Legacy Module is now working.
  * The hardware loop has been updated for better performance.
-#   2 0 2 4 - T h e - N u t s - T e a m - 6 1 3 3 - R o o k i e - R e p  
+#   2 0 2 4 - T h e - N u t s - T e a m - 6 1 3 3 - R o o k i e - R e p 
+ 
  
