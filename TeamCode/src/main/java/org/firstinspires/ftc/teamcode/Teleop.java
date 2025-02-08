@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,9 +10,10 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 
+
 import java.util.*;
 
-@TeleOp(name = "Limelight Pipeline Example")
+@TeleOp(name = "Detector Pipeline")
 //@Disabled
 public class Teleop extends LinearOpMode {
 
@@ -47,6 +49,8 @@ public class Teleop extends LinearOpMode {
                 telemetry.addData(className, "at (" + (Math.round(x*100.0))/100.0 + ", " + (Math.round(y*100.0))/100.0 + ") degrees");
                 telemetry.addData("CornersList", corners.toString());
             }
+
+
             telemetry.update();
         }
     }
