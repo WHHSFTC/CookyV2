@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.OldFiles;
 
 import java.util.*;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -10,6 +11,7 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import java.util.List;
 
 @TeleOp(name = "colorPipeline")
+@Disabled
 public class Teleop1 extends LinearOpMode {
 
     Limelight3A limelight;
