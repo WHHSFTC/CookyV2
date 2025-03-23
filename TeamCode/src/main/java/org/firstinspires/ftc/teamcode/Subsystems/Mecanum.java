@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Mecanum {
     //Fields
-    private DcMotor frontLeft, frontRight, backLeft, backRight;
+    private final DcMotor frontLeft, frontRight, backLeft, backRight;
     private boolean turtleMode; // Turtle Mode is our team's lingo for slow mode, set to TRUE to slow down robot
     private double turtleMultiplier; // This number should represent the final percent speed wanted. If 60% is desired, then 0.6
     private double frontLeftPower, frontRightPower, backLeftPower, backRightPower; // Declared here to allow us to have a getter for telemetry
