@@ -13,26 +13,41 @@ public class Claw {
     public Claw(HardwareMap hardwareMap, String servoName) {
         clawServo = hardwareMap.get(Servo.class, servoName);
     }
-
     // Method to set speed factor (range: 0.1 to 1.0 for smooth control)
     public void setSpeed(double newSpeed) {
         speed = Math.max(0.1, Math.min(newSpeed, 1.0)); // Limit range
     }
 
     // Set positions for opening and closing
-    public void setPositions(double pos1, double pos2) {
+    public void setPosition1(double pos1) {
         position1 = pos1;
-        position2 = pos2;
+    }
+    public void setPosition2(double pos2) {
+        position1 = pos2;
     }
 
-    // Open the claw gradually
-    public void open() {
+    public void openClaw() {
         moveServo(position2);
     }
 
-    // Close the claw gradually
-    public void close() {
+    public void closeClaw() {
         moveServo(position1);
+    }
+
+    public double getServoPosition() {
+        return clawServo.getPosition();
+    }
+
+    public double getPosition1() {
+        return position1;
+    }
+
+    public double getPosition2() {
+        return position2;
+    }
+
+    public double getSpeed() {
+        return speed;
     }
 
     // Helper function for smooth movement
