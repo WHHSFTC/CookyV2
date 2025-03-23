@@ -35,7 +35,7 @@ public class PIDController {
     /**
      * Calculates the motor power adjustment needed based on the target and current position.
      *
-     * @param target The desired position (setpoint)
+     * @param target  The desired position (setpoint)
      * @param current The actual position (sensor reading, like an encoder value)
      * @return The output correction value to adjust motor power
      */

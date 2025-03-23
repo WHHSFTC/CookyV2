@@ -82,16 +82,16 @@ public class Mecanum {
         return frontLeftPower;
     }
 
-    public DcMotor getFrontRightPower() {
-        return frontRight;
+    public double getFrontRightPower() {
+        return frontRightPower;
     }
 
-    public DcMotor getBackLeftPower() {
-        return backLeft;
+    public double getBackLeftPower() {
+        return backLeftPower;
     }
 
-    public DcMotor getBackRightPower() {
-        return backRight;
+    public double getBackRightPower() {
+        return backRightPower;
     }
 
     // Method to stop the motors

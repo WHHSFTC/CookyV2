@@ -13,6 +13,7 @@ public class Claw {
     public Claw(HardwareMap hardwareMap, String servoName) {
         clawServo = hardwareMap.get(Servo.class, servoName);
     }
+
     // Method to set speed factor (range: 0.1 to 1.0 for smooth control)
     public void setSpeed(double newSpeed) {
         speed = Math.max(0.1, Math.min(newSpeed, 1.0)); // Limit range
@@ -22,8 +23,9 @@ public class Claw {
     public void setPosition1(double pos1) {
         position1 = pos1;
     }
+
     public void setPosition2(double pos2) {
-        position1 = pos2;
+        position2 = pos2;
     }
 
     public void openClaw() {
