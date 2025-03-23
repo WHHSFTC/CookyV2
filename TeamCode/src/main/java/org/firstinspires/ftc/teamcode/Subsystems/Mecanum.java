@@ -4,19 +4,25 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Mecanum {
-    //Fields: Declare motors
+    //Fields
     private DcMotor frontLeft, frontRight, backLeft, backRight;
+    private boolean turtleMode; // Turtle Mode is our team's lingo for slow mode, set to TRUE to slow down robot
+    private double turtleMultiplier; // This number should represent the final percent speed wanted. If 60% is desired, then 0.6
+    private double frontLeftPower, frontRightPower, backLeftPower, backRightPower; // Declared here to allow us to have a getter for telemetry
 
     // Constructor: Initialize motors using hardwareMap
     public Mecanum(HardwareMap hardwareMap) {
-        frontLeft = hardwareMap.get(DcMotor.class, "front_left");
-        frontRight = hardwareMap.get(DcMotor.class, "front_right");
-        backLeft = hardwareMap.get(DcMotor.class, "back_left");
-        backRight = hardwareMap.get(DcMotor.class, "back_right");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
 
         // Reverse motors if needed
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
+
+        turtleMode = false; // Default turtleMode is off
+        turtleMultiplier = 0.6; // Default 60% multiplier
     }
 
     // Method to drive the robot using mecanum wheel calculations
@@ -24,10 +30,10 @@ public class Mecanum {
     // x: Left/right movement (strafing)
     // rotation: Turning in place
     public void drive(double x, double y, double rotation) {
-        double frontLeftPower = y + x + rotation;
-        double frontRightPower = y - x - rotation;
-        double backLeftPower = y - x + rotation;
-        double backRightPower = y + x - rotation;
+        frontLeftPower = y + x + rotation;
+        frontRightPower = y - x - rotation;
+        backLeftPower = y - x + rotation;
+        backRightPower = y + x - rotation;
 
         // Find the maximum power value
         double maxPower = Math.max(1.0, Math.abs(frontLeftPower));
@@ -41,10 +47,51 @@ public class Mecanum {
         backLeftPower /= maxPower;
         backRightPower /= maxPower;
 
+        // Apply turtle multiplier if turtle mode is enabled
+        if (turtleMode) {
+            frontLeftPower *= turtleMultiplier;
+            frontRightPower *= turtleMultiplier;
+            backLeftPower *= turtleMultiplier;
+            backRightPower *= turtleMultiplier;
+        }
+
         frontLeft.setPower(frontLeftPower);
         frontRight.setPower(frontRightPower);
         backLeft.setPower(backLeftPower);
         backRight.setPower(backRightPower);
+    }
+
+    // Getters and Setters
+    public void setTurtleMode(boolean mode) {
+        turtleMode = mode;
+    }
+
+    public void setTurtleMultiplier(double multiplier) {
+        turtleMultiplier = multiplier;
+    }
+
+    public boolean isTurtleMode() {
+        return turtleMode;
+    }
+
+    public double getTurtleMultiplier() {
+        return turtleMultiplier;
+    }
+
+    public double getFrontLeftPower() {
+        return frontLeftPower;
+    }
+
+    public DcMotor getFrontRightPower() {
+        return frontRight;
+    }
+
+    public DcMotor getBackLeftPower() {
+        return backLeft;
+    }
+
+    public DcMotor getBackRightPower() {
+        return backRight;
     }
 
     // Method to stop the motors
