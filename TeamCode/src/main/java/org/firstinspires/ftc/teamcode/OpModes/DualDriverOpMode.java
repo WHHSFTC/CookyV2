@@ -23,9 +23,6 @@ public class DualDriverOpMode extends LinearOpMode {
         claw.setPosition2(0.8);
         claw.setSpeed(0.5);
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
-
         waitForStart();
 
         while (opModeIsActive()) {
