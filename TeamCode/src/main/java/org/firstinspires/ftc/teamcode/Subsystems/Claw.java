@@ -2,16 +2,33 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.hardware.lynx.LynxModule;
+
+import java.util.List;
 
 public class Claw {
     private final Servo clawServo; // final means constant
     private double position1 = 0.0;  // Default closed position
     private double position2 = 1.0;  // Default open position
     private double speed = 1.0;      // Default Speed factor for gradual movement
+    private final List<LynxModule> allHubs; // List of all connected hubs
 
     // Constructor, when declaring a servo, name must be provided
     public Claw(HardwareMap hardwareMap, String servoName) {
         clawServo = hardwareMap.get(Servo.class, servoName);
+
+        // Get all hubs and enable bulk read mode
+        allHubs = hardwareMap.getAll(LynxModule.class);
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+    }
+
+    // Method to update bulk read data (should be called once per loop)
+    public void updateBulkRead() {
+        for (LynxModule hub : allHubs) {
+            hub.clearBulkCache();
+        }
     }
 
     // Method to set speed factor (range: 0.1 to 1.0 for smooth control)
