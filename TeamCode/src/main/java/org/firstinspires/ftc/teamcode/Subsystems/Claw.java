@@ -2,38 +2,30 @@ package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.hardware.lynx.LynxModule;
-
-import java.util.List;
 
 public class Claw {
-    private final Servo clawServo; // final means constant
-    private double position1 = 0.0;  // Default closed position
-    private double position2 = 1.0;  // Default open position
-    private double speed = 1.0;      // Default Speed factor for gradual movement
-    private final List<LynxModule> allHubs; // List of all connected hubs
+    private final Servo clawServo;
+    /**
+     * Value for the default closed position (Tune in the Claw Class file)
+     */
+    private double position1 = .2; // TUNE Default closed position
+    /**
+     * Value for the default open position (Tune in the Claw Class file)
+     */
+    private double position2 = .53; // TUNE Default open position
+    /**
+     * Value for the default speed factor (Tune in the Claw Class file)
+     */
 
-    // Constructor, when declaring a servo, name must be provided
+    /**
+     * Constructor: Initializes the PID controller with given tuning values.
+     *
+     * @param hardwareMap write "hardwareMap" in the call to pass the Hardware Map to the Claw class
+     * @param servoName   {String} - Name of the claw servo
+     */
     public Claw(HardwareMap hardwareMap, String servoName) {
         clawServo = hardwareMap.get(Servo.class, servoName);
 
-        // Get all hubs and enable bulk read mode
-        allHubs = hardwareMap.getAll(LynxModule.class);
-        for (LynxModule hub : allHubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
-    }
-
-    // Method to update bulk read data (should be called once per loop)
-    public void updateBulkRead() {
-        for (LynxModule hub : allHubs) {
-            hub.clearBulkCache();
-        }
-    }
-
-    // Method to set speed factor (range: 0.1 to 1.0 for smooth control)
-    public void setSpeed(double newSpeed) {
-        speed = Math.max(0.1, Math.min(newSpeed, 1.0)); // Limit range
     }
 
     // Set positions for opening and closing
@@ -46,11 +38,11 @@ public class Claw {
     }
 
     public void openClaw() {
-        moveServo(position2);
+        clawServo.setPosition(position1);
     }
 
     public void closeClaw() {
-        moveServo(position1);
+        clawServo.setPosition(position2);
     }
 
     public double getServoPosition() {
@@ -65,25 +57,4 @@ public class Claw {
         return position2;
     }
 
-    public double getSpeed() {
-        return speed;
-    }
-
-    // Helper function for smooth movement
-    private void moveServo(double targetPosition) {
-        double currentPosition = clawServo.getPosition();
-
-        while (Math.abs(currentPosition - targetPosition) > 0.01) { // Small threshold to stop
-            currentPosition += Math.signum(targetPosition - currentPosition) * speed * 0.01;
-            clawServo.setPosition(currentPosition);
-
-            try {
-                Thread.sleep(10); // Short delay for smoother motion
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        clawServo.setPosition(targetPosition); // Ensure final position
-    }
 }

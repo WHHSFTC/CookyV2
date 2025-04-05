@@ -12,7 +12,6 @@ public class Mecanum {
     private boolean turtleMode; // Turtle Mode is our team's lingo for slow mode, set to TRUE to slow down robot
     private double turtleMultiplier; // This number should represent the final percent speed wanted. If 60% is desired, then 0.6
     private double frontLeftPower, frontRightPower, backLeftPower, backRightPower; // Declared here to allow us to have a getter for telemetry
-    private final List<LynxModule> allHubs; // List of all connected hubs
 
     // Constructor: Initialize motors using hardwareMap
     public Mecanum(HardwareMap hardwareMap) {
@@ -27,19 +26,6 @@ public class Mecanum {
 
         turtleMode = false; // Default turtleMode is off
         turtleMultiplier = 0.6; // Default 60% multiplier
-
-        // Get all hubs and enable bulk read mode
-        allHubs = hardwareMap.getAll(LynxModule.class);
-        for (LynxModule hub : allHubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
-    }
-
-    // Method to update bulk read data (should be called once per loop)
-    public void updateBulkRead() {
-        for (LynxModule hub : allHubs) {
-            hub.clearBulkCache();
-        }
     }
 
     // Method to drive the robot using mecanum wheel calculations

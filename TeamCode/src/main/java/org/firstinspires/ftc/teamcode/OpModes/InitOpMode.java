@@ -19,12 +19,9 @@ public class InitOpMode extends OpMode {
         intakeArm = new IntakeArm(hardwareMap, "leftIntakeServo", "rightIntakeServo", "wristServo"); // Initialize IntakeArm
 
         // Set initial positions and configurations for Claw
-        claw.setPosition2(1.0); // Default open position
-        claw.setSpeed(0.5); // Smooth movement speed
         claw.closeClaw(); // Ensure the claw starts closed
 
         // Set initial positions for IntakeArm
-        intakeArm.setTransferPosition(1.0); // Transfer position for the intake arm
         intakeArm.moveToTransfer(); // Move arm to transfer position
         intakeArm.moveWrist(0.5); // Set wrist to center position
 

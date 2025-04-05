@@ -11,8 +11,6 @@ public class IntakeArm {
     private double intakePosition = 0.0; // TUNE HERE
     private double transferPosition = 1.0; // TUNE HERE
     private double wristPosition = 0.5; // TUNE HERE - set this to be the center position for the wrist
-    private double speed = 1.0;
-    private final List<LynxModule> allHubs;
 
     /**
      * Constructor for the Intake Arm.
@@ -26,17 +24,6 @@ public class IntakeArm {
         leftServo = hardwareMap.get(Servo.class, leftServoName);
         rightServo = hardwareMap.get(Servo.class, rightServoName);
         wristServo = hardwareMap.get(Servo.class, wristServoName);
-
-        allHubs = hardwareMap.getAll(LynxModule.class);
-        for (LynxModule hub : allHubs) {
-            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
-    }
-
-    public void updateBulkRead() {
-        for (LynxModule hub : allHubs) {
-            hub.clearBulkCache();
-        }
     }
 
     public void moveToIntake() {
@@ -49,10 +36,6 @@ public class IntakeArm {
 
     public void moveWrist(double targetPosition) {
         wristServo.setPosition(targetPosition);
-    }
-
-    public void setSpeed(double newSpeed) {
-        speed = Math.max(0.1, Math.min(newSpeed, 1.0));
     }
 
     public void setIntakePosition(double pos) {
@@ -83,28 +66,7 @@ public class IntakeArm {
         return transferPosition;
     }
 
-    public double getSpeed() {
-        return speed;
-    }
-
     private void moveServo(double targetPosition) {
-        double leftPosition = leftServo.getPosition();
-        double rightPosition = 1.0 - leftPosition;
-
-        while (Math.abs(leftPosition - targetPosition) > 0.01) {
-            leftPosition += Math.signum(targetPosition - leftPosition) * speed * 0.01;
-            rightPosition = 1.0 - leftPosition;
-
-            leftServo.setPosition(leftPosition);
-            rightServo.setPosition(rightPosition);
-
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-
         leftServo.setPosition(targetPosition);
         rightServo.setPosition(1.0 - targetPosition);
     }
