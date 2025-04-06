@@ -1,16 +1,17 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.hardware.lynx.LynxModule;
-
-import java.util.List;
 
 public class IntakeArm {
     private final Servo leftServo, rightServo, wristServo;
     private double intakePosition = 0.0; // TUNE HERE
+    private double hoverPosition = 0.5; // TUNE HERE
     private double transferPosition = 1.0; // TUNE HERE
     private double wristPosition = 0.5; // TUNE HERE - set this to be the center position for the wrist
+
+    private double wristLeftPosition = .18, wristRightPosition = .82; // TUNE HERE - currently tuned via FTC dashboard, public static is visible in dashboard
 
     /**
      * Constructor for the Intake Arm.
@@ -27,15 +28,33 @@ public class IntakeArm {
     }
 
     public void moveToIntake() {
-        moveServo(intakePosition);
+        moveArmServos(intakePosition);
+    }
+
+    public void moveToHover() {
+        moveArmServos(hoverPosition);
     }
 
     public void moveToTransfer() {
-        moveServo(transferPosition);
+        moveArmServos(transferPosition);
     }
+
+    /**
+     * Allows for moving the wrist to an exact specified position
+     *
+     * @param targetPosition exact position to turn servo to
+     */
 
     public void moveWrist(double targetPosition) {
         wristServo.setPosition(targetPosition);
+    }
+
+    public void wristLeftPos() {
+        wristServo.setPosition(wristLeftPosition);
+    }
+
+    public void wristRightPos() {
+        wristServo.setPosition(wristRightPosition);
     }
 
     public void setIntakePosition(double pos) {
@@ -66,7 +85,7 @@ public class IntakeArm {
         return transferPosition;
     }
 
-    private void moveServo(double targetPosition) {
+    private void moveArmServos(double targetPosition) { //Automatically reversed arm servos based on target pos
         leftServo.setPosition(targetPosition);
         rightServo.setPosition(1.0 - targetPosition);
     }

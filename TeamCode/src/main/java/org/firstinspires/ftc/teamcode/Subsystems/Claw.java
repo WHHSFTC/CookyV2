@@ -57,4 +57,8 @@ public class Claw {
         return position2;
     }
 
+    public boolean isOpen() {
+        if (clawServo.getPosition() == position1) return true;
+        else return false;
+    }
 }

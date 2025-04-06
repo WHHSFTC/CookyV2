@@ -1,18 +1,16 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.Subsystems.Claw;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.ExpansionHub;
+
 import com.acmerobotics.dashboard.config.Config;
 
-@TeleOp(name = "Mecanum with Claw", group = "OpModes")
+@TeleOp(name = "Dual Driver OpMode", group = "OpModes")
 @Config
 public class DualDriverOpMode extends LinearOpMode {
     private Mecanum mecanum;
@@ -20,7 +18,6 @@ public class DualDriverOpMode extends LinearOpMode {
     private IntakeArm intakeArm;
     private boolean turtleMode = false; // Tracks turtle mode state, false is regular speed, true means slow speed
     private ExpansionHub expansionHub;
-    public static double wristL = .18, wristR = .82;
 
     @Override
     public void runOpMode() {
@@ -31,11 +28,6 @@ public class DualDriverOpMode extends LinearOpMode {
 
         // Initialize the Expansion Hub
         expansionHub = new ExpansionHub(hardwareMap);
-
-        // Set initial intake arm positions
-        intakeArm.setTransferPosition(1.0); // Transfer position for the intake arm
-        intakeArm.moveToTransfer(); // Move arm to transfer position
-        intakeArm.moveWrist(0.5); // Set wrist to center position
 
         waitForStart();
 
@@ -61,32 +53,32 @@ public class DualDriverOpMode extends LinearOpMode {
                 } else {
                     gamepad1.rumbleBlips(1); // 1 blip for fast mode
                 }
-                //sleep(200); // Prevent accidental double toggle
             }
 
             // Gamepad 2: Claw control
-            if (gamepad2.a) {
+            if (gamepad2.right_bumper && !claw.isOpen()) {
                 claw.openClaw();
-            } else if (gamepad2.b) {
+            } else if (gamepad2.right_bumper && claw.isOpen()) {
                 claw.closeClaw();
             }
 
             // Gamepad 2: Intake Arm control
-            if (gamepad2.x) {
+            if (gamepad2.dpad_right) {
                 intakeArm.moveToIntake(); // Move intake arm to intake position
-            } else if (gamepad2.y) {
+            } else if (gamepad2.dpad_up) {
+                intakeArm.moveToHover(); // Move intake arm to Hover position
+            } else if (gamepad2.dpad_left) {
                 intakeArm.moveToTransfer(); // Move intake arm to transfer position
             }
 
             // Move wrist using the dpad
-            if (gamepad2.dpad_left) {
-                intakeArm.moveWrist(wristL); // Move wrist to left position
-            } else if (gamepad2.dpad_right) {
-                intakeArm.moveWrist(wristR); // Move wrist to right position
-            } else if (gamepad2.dpad_up) {
-                intakeArm.moveWrist(0.5);
+            if (gamepad2.left_trigger > 0) {
+                intakeArm.wristLeftPos(); // Move wrist to left position
+            } else if (gamepad2.right_trigger > 0) {
+                intakeArm.wristRightPos(); // Move wrist to right position
+            } else if (gamepad2.left_bumper) {
+                intakeArm.moveWrist(0.5); // Move wrist to center position
             }
-
 
             // Telemetry for debugging
             telemetry.addData("Drive", "y: %.2f, x: %.2f, rot: %.2f", y, x, rotation);
