@@ -11,15 +11,17 @@ import org.firstinspires.ftc.teamcode.Subsystems.Slides;
 
 import com.acmerobotics.dashboard.config.Config;
 
-@TeleOp(name = "Dual Driver OpMode", group = "OpModes")
+@TeleOp(name = "Single Driver OpMode", group = "OpModes")
 @Config
-public class DualDriverOpMode extends LinearOpMode {
+public class SingleDriverOpMode extends LinearOpMode {
     private Mecanum mecanum;
     private Claw claw;
     private IntakeArm intakeArm;
     private Slides horizontalSLides;
     private boolean turtleMode = false; // Tracks turtle mode state, false is regular speed, true means slow speed
     private ExpansionHub expansionHub;
+    public static double kP = 0.01, kI = 0.0, kD = 0.0001;
+    public static int extendedPos = 200, retractedPos = 0;
 
     @Override
     public void runOpMode() {
@@ -27,7 +29,7 @@ public class DualDriverOpMode extends LinearOpMode {
         mecanum = new Mecanum(hardwareMap);
         claw = new Claw(hardwareMap, "clawServo");
         intakeArm = new IntakeArm(hardwareMap, "leftIntakeServo", "rightIntakeServo", "wristServo");
-        horizontalSLides = new Slides(hardwareMap, "horizontalSlideMotor", 0.01, 0.0, 0.001);
+        horizontalSLides = new Slides(hardwareMap, "horizontalSlideMotor", kP, kI, kD);
 
         // Initialize the Expansion Hub
         expansionHub = new ExpansionHub(hardwareMap);
@@ -38,7 +40,6 @@ public class DualDriverOpMode extends LinearOpMode {
             // Update bulk data for the Expansion Hub
             expansionHub.updateBulkData();
 
-            // Gamepad 1: Driving
             double y = -gamepad1.left_stick_y; // Forward/backward
             double x = gamepad1.left_stick_x;  // Strafe left/right
             double rotation = gamepad1.right_stick_x; // Rotation
@@ -46,7 +47,7 @@ public class DualDriverOpMode extends LinearOpMode {
             mecanum.drive(x, y, rotation);
 
             // Toggle Turtle Mode when pressing Right Bumper
-            if (gamepad1.right_bumper) {
+            if (gamepad1.dpad_down) {
                 turtleMode = !turtleMode; // Flip state
                 mecanum.setTurtleMode(turtleMode);
 
@@ -58,29 +59,33 @@ public class DualDriverOpMode extends LinearOpMode {
                 }
             }
 
-            // Gamepad 2: Claw control
-            if (gamepad2.right_bumper && !claw.isOpen()) {
+            if (gamepad1.right_bumper && !claw.isOpen()) {
                 claw.openClaw();
-            } else if (gamepad2.right_bumper && claw.isOpen()) {
+            } else if (gamepad1.right_bumper && claw.isOpen()) {
                 claw.closeClaw();
             }
 
-            // Gamepad 2: Intake Arm control
-            if (gamepad2.dpad_right) {
+            if (gamepad1.dpad_right) {
                 intakeArm.moveToIntake(); // Move intake arm to intake position
-            } else if (gamepad2.dpad_up) {
+            } else if (gamepad1.dpad_up) {
                 intakeArm.moveToHover(); // Move intake arm to Hover position
-            } else if (gamepad2.dpad_left) {
+            } else if (gamepad1.dpad_left) {
                 intakeArm.moveToTransfer(); // Move intake arm to transfer position
             }
 
             // Move wrist using the dpad
-            if (gamepad2.left_trigger > 0) {
+            if (gamepad1.left_trigger > 0) {
                 intakeArm.wristLeftPos(); // Move wrist to left position
-            } else if (gamepad2.right_trigger > 0) {
+            } else if (gamepad1.right_trigger > 0) {
                 intakeArm.wristRightPos(); // Move wrist to right position
-            } else if (gamepad2.left_bumper) {
+            } else if (gamepad1.left_bumper) {
                 intakeArm.moveWrist(0.5); // Move wrist to center position
+            }
+
+            if (gamepad1.a) {
+                horizontalSLides.goTo(extendedPos);
+            } else if (gamepad1.b) {
+                horizontalSLides.goTo(retractedPos);
             }
 
             // Telemetry for debugging

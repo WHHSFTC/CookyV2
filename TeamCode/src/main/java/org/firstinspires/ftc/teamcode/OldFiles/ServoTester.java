@@ -1,15 +1,9 @@
-package org.firstinspires.ftc.teamcode.OpModes;
+package org.firstinspires.ftc.teamcode.OldFiles;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.firstinspires.ftc.teamcode.Subsystems.Mecanum;
-import org.firstinspires.ftc.teamcode.Subsystems.ExpansionHub;
-
-import com.acmerobotics.dashboard.config.Config;
 
 @TeleOp(name = "Servo", group = "OpModes")
 @Config

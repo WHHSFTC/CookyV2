@@ -4,11 +4,12 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Config
 public class IntakeArm {
     private final Servo leftServo, rightServo, wristServo;
-    private double intakePosition = 0.0; // TUNE HERE
-    private double hoverPosition = 0.5; // TUNE HERE
-    private double transferPosition = 1.0; // TUNE HERE
+    public static double intakePosition = 0.0; // TUNE HERE
+    public static double hoverPosition = 0.5; // TUNE HERE
+    public static double transferPosition = 1.0; // TUNE HERE
     private double wristPosition = 0.5; // TUNE HERE - set this to be the center position for the wrist
 
     private double wristLeftPosition = .18, wristRightPosition = .82; // TUNE HERE - currently tuned via FTC dashboard, public static is visible in dashboard
