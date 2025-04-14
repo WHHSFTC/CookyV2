@@ -17,7 +17,7 @@ public class SingleDriverOpMode extends LinearOpMode {
     private Mecanum mecanum;
     private Claw claw;
     private IntakeArm intakeArm;
-    private Slides horizontalSLides;
+    //private Slides horizontalSLides;
     private boolean turtleMode = false; // Tracks turtle mode state, false is regular speed, true means slow speed
     private ExpansionHub expansionHub;
     public static double kP = 0.01, kI = 0.0, kD = 0.0001;
@@ -29,7 +29,7 @@ public class SingleDriverOpMode extends LinearOpMode {
         mecanum = new Mecanum(hardwareMap);
         claw = new Claw(hardwareMap, "clawServo");
         intakeArm = new IntakeArm(hardwareMap, "leftIntakeServo", "rightIntakeServo", "wristServo");
-        horizontalSLides = new Slides(hardwareMap, "horizontalSlideMotor", kP, kI, kD);
+        //horizontalSLides = new Slides(hardwareMap, "horizontalSlideMotor", kP, kI, kD);
 
         // Initialize the Expansion Hub
         expansionHub = new ExpansionHub(hardwareMap);
@@ -61,8 +61,10 @@ public class SingleDriverOpMode extends LinearOpMode {
 
             if (gamepad1.right_bumper && !claw.isOpen()) {
                 claw.openClaw();
+                sleep(200);
             } else if (gamepad1.right_bumper && claw.isOpen()) {
                 claw.closeClaw();
+                sleep(200);
             }
 
             if (gamepad1.dpad_right) {
@@ -81,13 +83,13 @@ public class SingleDriverOpMode extends LinearOpMode {
             } else if (gamepad1.left_bumper) {
                 intakeArm.moveWrist(0.5); // Move wrist to center position
             }
-
+            /*
             if (gamepad1.a) {
                 horizontalSLides.goTo(extendedPos);
             } else if (gamepad1.b) {
                 horizontalSLides.goTo(retractedPos);
             }
-
+            */
             // Telemetry for debugging
             telemetry.addData("Drive", "y: %.2f, x: %.2f, rot: %.2f", y, x, rotation);
             telemetry.addData("Turtle Mode", mecanum.isTurtleMode());

@@ -1,18 +1,19 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
+@Config
 public class Claw {
     private final Servo clawServo;
     /**
      * Value for the default closed position (Tune in the Claw Class file)
      */
-    private double position1 = .2; // TUNE Default closed position
+    public static double position1 = .2; // TUNE Default closed position
     /**
      * Value for the default open position (Tune in the Claw Class file)
      */
-    private double position2 = .53; // TUNE Default open position
+    public static double position2 = .58; // TUNE Default open position
     /**
      * Value for the default speed factor (Tune in the Claw Class file)
      */

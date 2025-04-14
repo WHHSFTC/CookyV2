@@ -17,7 +17,7 @@ public class DualDriverOpMode extends LinearOpMode {
     private Mecanum mecanum;
     private Claw claw;
     private IntakeArm intakeArm;
-    private Slides horizontalSLides;
+    //private Slides horizontalSLides;
     private boolean turtleMode = false; // Tracks turtle mode state, false is regular speed, true means slow speed
     private ExpansionHub expansionHub;
 
@@ -27,7 +27,7 @@ public class DualDriverOpMode extends LinearOpMode {
         mecanum = new Mecanum(hardwareMap);
         claw = new Claw(hardwareMap, "clawServo");
         intakeArm = new IntakeArm(hardwareMap, "leftIntakeServo", "rightIntakeServo", "wristServo");
-        horizontalSLides = new Slides(hardwareMap, "horizontalSlideMotor", 0.01, 0.0, 0.001);
+        //horizontalSLides = new Slides(hardwareMap, "horizontalSlideMotor", 0.01, 0.0, 0.001);
 
         // Initialize the Expansion Hub
         expansionHub = new ExpansionHub(hardwareMap);
