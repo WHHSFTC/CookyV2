@@ -57,6 +57,9 @@ public class IntakeArm {
     public void wristRightPos() {
         wristServo.setPosition(wristRightPosition);
     }
+    public void wristCenterPos() {
+        wristServo.setPosition(wristPosition);
+    }
 
     public void setIntakePosition(double pos) {
         intakePosition = pos;

@@ -21,7 +21,7 @@ public class InitOpMode extends OpMode {
 
         // Set initial positions for IntakeArm
         intakeArm.moveToTransfer(); // Move arm to transfer position
-        intakeArm.moveWrist(0.5); // Set wrist to center position
+        intakeArm.wristCenterPos(); // Set wrist to center position
 
         // Telemetry updates
         telemetry.addData("Status", "Robot Initialized!");
