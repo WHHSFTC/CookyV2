@@ -80,7 +80,7 @@ public class DualDriverOpMode extends LinearOpMode {
             } else if (gamepad2.right_trigger > 0) {
                 intakeArm.wristRightPos(); // Move wrist to right position
             } else if (gamepad2.left_bumper) {
-                intakeArm.moveWrist(0.5); // Move wrist to center position
+                intakeArm.wristCenterPos(); // Move wrist to center position
             }
 
             // Telemetry for debugging

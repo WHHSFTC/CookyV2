@@ -81,7 +81,7 @@ public class SingleDriverOpMode extends LinearOpMode {
             } else if (gamepad1.right_trigger > 0) {
                 intakeArm.wristRightPos(); // Move wrist to right position
             } else if (gamepad1.left_bumper) {
-                intakeArm.moveWrist(0.5); // Move wrist to center position
+                intakeArm.wristCenterPos(); // Move wrist to center position
             }
             /*
             if (gamepad1.a) {
