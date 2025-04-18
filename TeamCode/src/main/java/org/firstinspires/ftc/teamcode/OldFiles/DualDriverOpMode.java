@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.OpModes;
+package org.firstinspires.ftc.teamcode.OldFiles;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -7,12 +8,12 @@ import org.firstinspires.ftc.teamcode.Subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.Subsystems.Claw;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeArm;
 import org.firstinspires.ftc.teamcode.Subsystems.ExpansionHub;
-import org.firstinspires.ftc.teamcode.Subsystems.Slides;
 
 import com.acmerobotics.dashboard.config.Config;
 
 @TeleOp(name = "Dual Driver OpMode", group = "OpModes")
 @Config
+@Disabled
 public class DualDriverOpMode extends LinearOpMode {
     private Mecanum mecanum;
     private Claw claw;
