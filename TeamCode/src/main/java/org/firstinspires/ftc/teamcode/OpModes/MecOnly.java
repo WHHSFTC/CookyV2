@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Subsystems.Mecanum;
-import org.firstinspires.ftc.teamcode.Subsystems.ExpansionHub;
+import org.firstinspires.ftc.teamcode.OldFiles.ExpansionHub;
 
 @TeleOp(name = "Mecanum Only TeleOp", group = "OpModes")
 public class MecOnly extends LinearOpMode {

@@ -12,9 +12,6 @@ public class SingleDriverOpMode extends InitOpMode {
 
     @Override
     public void loop() {
-        // Update bulk data for the Expansion Hub
-
-
         double y = -gamepad1.left_stick_y; // Forward/backward
         double x = gamepad1.left_stick_x;  // Strafe left/right
         double rotation = gamepad1.right_stick_x; // Rotation

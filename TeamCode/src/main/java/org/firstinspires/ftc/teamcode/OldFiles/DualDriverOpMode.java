@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.Subsystems.Claw;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeArm;
-import org.firstinspires.ftc.teamcode.Subsystems.ExpansionHub;
 
 import com.acmerobotics.dashboard.config.Config;
 

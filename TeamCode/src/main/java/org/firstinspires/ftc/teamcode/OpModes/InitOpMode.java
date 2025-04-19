@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.Subsystems.ExpansionHub;
+import org.firstinspires.ftc.teamcode.OldFiles.ExpansionHub;
 import org.firstinspires.ftc.teamcode.Subsystems.Mecanum;
 import org.firstinspires.ftc.teamcode.Subsystems.Claw;
 import org.firstinspires.ftc.teamcode.Subsystems.IntakeArm;
@@ -13,19 +13,18 @@ public class InitOpMode extends OpMode {
     protected Claw claw;
     protected IntakeArm intakeArm;
     protected Slides horizontalSLides;
-    protected ExpansionHub expansionHub;
 
     // This method runs once when the "INIT" button is pressed on Driver Station
     @Override
     public void init() {
+        // Drivetrain motors
         mecanum = new Mecanum(hardwareMap);
+        // Intake Claw
         claw = new Claw(hardwareMap, "clawServo");
+        // Intake Arm
         intakeArm = new IntakeArm(hardwareMap, "leftIntakeServo", "rightIntakeServo", "wristServo");
-        horizontalSLides = new Slides(hardwareMap, "horizontalSlideMotor");
-        claw = new Claw(hardwareMap, "clawServo");
-        intakeArm = new IntakeArm(hardwareMap, "leftIntakeServo", "rightIntakeServo", "wristServo"); // Initialize IntakeArm
-
-        expansionHub.updateBulkData();
+        // Slides
+        horizontalSLides = new Slides(hardwareMap, "horizontalSlideMotor"); // Harware map will automatically find the motor even on ehub
 
         // Set initial positions and configurations for Claw
         claw.openClaw(); // Ensure the claw starts closed
@@ -42,8 +41,8 @@ public class InitOpMode extends OpMode {
         telemetry.update();
     }
 
-    // This method is called repeatedly during the match, but here it's not doing anything
+    // This method is called repeatedly during the match, to be used later for bulk reads
     public void loop() {
-        // No continuous logic is needed here for initialization
+        // BULK READ TO BE IMPLEMENTED LATER
     }
 }
